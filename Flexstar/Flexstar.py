@@ -1,90 +1,72 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox, scrolledtext
-import os
-import time
-
-# Example module functions
-def module_a(folder_path):
-    time.sleep(2)  # Simulate processing
-    return f"Module A processed folder: {folder_path}\nFiles: {os.listdir(folder_path)}"
-
-def module_b(folder_path):
-    time.sleep(2)  # Simulate processing
-    return f"Module B processed folder: {folder_path}\nTotal files: {len(os.listdir(folder_path))}"
-
-def module_c(folder_path):
-    time.sleep(2)  # Simulate processing
-    return f"Module C processed folder: {folder_path}\nFiles: {os.listdir(folder_path)}"
-
-modules = {
-    "Module A": module_a,
-    "Module B": module_b,
-    "Module C": module_c,
-}
-
-def display_result(result):
-    # Create a new Toplevel window to display the result
-    result_window = tk.Toplevel(root)
-    result_window.title("Module Result")
-    
-    # Create a scrolled text area for displaying results
-    result_text = scrolledtext.ScrolledText(result_window, wrap=tk.WORD, width=50, height=20)
-    result_text.pack(expand=True, fill='both', padx=10, pady=10)
-
-    # Insert the result into the text area
-    result_text.insert(tk.END, result)
-    result_text.config(state=tk.DISABLED)  # Make it read-only
-
-    # Close button to close the result window
-    close_button = tk.Button(result_window, text="Close", command=result_window.destroy)
-    close_button.pack(pady=10)
-
-def on_run():
-    folder_path = folder_var.get()
-    selected_module = module_var.get()
-    if not folder_path or selected_module == "Select a Module":
-        messagebox.showwarning("Warning", "Please select a folder and a module.")
-        return
-    
-    # Hide the main window
-    #root.withdraw()
-
-    # Execute the selected module and display the result
-    result = modules[selected_module](folder_path)
-    display_result(result)
-    
-    # Show the main window again after displaying the result
-    root.deiconify()
+from tkinter import filedialog, messagebox, ttk
+import subprocess
 
 def browse_folder():
-    folder_selected = filedialog.askdirectory()
-    if folder_selected:
-        folder_var.set(folder_selected)
+    folder_path = filedialog.askdirectory()
+    folder_var.set(folder_path)
+
+def run_module():
+    folder_path = folder_var.get()
+    selected_module = module_var.get()
+    
+    if not folder_path:
+        messagebox.showwarning("Warning", "Please select a folder.")
+        return
+    
+    if selected_module == "Select Module":
+        messagebox.showwarning("Warning", "Please select a module.")
+        return
+
+    # Run the selected module in a new process
+    try:
+        result = subprocess.run(
+            ["python", selected_module, folder_path],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        output_window(result.stdout)
+    except subprocess.CalledProcessError as e:
+        messagebox.showerror("Error", f"Error running module: {e.stderr}")
+
+def output_window(output):
+    result_window = tk.Toplevel(root)
+    result_window.title("Parse Results")
+    
+    text_area = tk.Text(result_window, wrap='word')
+    text_area.insert('1.0', output)
+    text_area.pack(expand=True, fill='both')
+    
+    button_close = tk.Button(result_window, text="Close", command=result_window.destroy)
+    button_close.pack()
 
 # Create the main window
 root = tk.Tk()
-root.title("Module Runner")
+root.title("Log Parser")
 
-# Variable to hold the folder path
 folder_var = tk.StringVar()
+module_var = tk.StringVar(value="Select Module")
 
-# Button to browse for a folder
-browse_button = tk.Button(root, text="Browse Folder", command=browse_folder)
-browse_button.pack(pady=10)
+# Create UI elements
+frame = tk.Frame(root)
+frame.pack(pady=10)
 
-# Label to show the selected folder
-folder_label = tk.Label(root, textvariable=folder_var)
-folder_label.pack(pady=5)
+browse_button = tk.Button(frame, text="Browse Folder", command=browse_folder)
+browse_button.pack(side='left', padx=5)
 
-# Dropdown for module selection
-module_var = tk.StringVar(root)
-module_var.set("Select a Module")  # Default option
-module_menu = tk.OptionMenu(root, module_var, *modules.keys())
-module_menu.pack(pady=20)
+folder_label = tk.Label(frame, textvariable=folder_var)
+folder_label.pack(side='left', padx=5)
 
-# Button to run the selected module
-run_button = tk.Button(root, text="Run Module", command=on_run)
-run_button.pack(pady=20)
+module_label = tk.Label(root, text="Select Module:")
+module_label.pack(pady=5)
+
+modules = ["a.py", "b.py", "c.py"]
+module_dropdown = ttk.Combobox(root, textvariable=module_var, values=modules)
+module_dropdown.pack(pady=5)
+
+run_button = tk.Button(root, text="Run", command=run_module)
+run_button.pack(pady=10)
 
 # Start the GUI event loop
 root.mainloop()
