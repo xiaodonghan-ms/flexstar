@@ -21,10 +21,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="a.py" />
-    <Compile Include="b.py" />
-    <Compile Include="c.py" />
     <Compile Include="Flexstar.py" />
+    <Compile Include="module\a.py" />
+    <Compile Include="module\b.py" />
+    <Compile Include="module\c.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="module\" />
