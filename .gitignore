@@ -1,15 +1,4 @@
-packages/
-obj/
-bin/
 .vs/
+.idea/
 *.sln
-archive/
-example/
-trace/
-publish/
-scripts/
-wwwroot/
-config/
-Properties/Version.txt
-tinymce.zip
-Flexstar_TemporaryKey.pfx
+__pycache__
