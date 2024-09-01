@@ -65,7 +65,7 @@ modules = load_modules()
 module_dropdown = ttk.Combobox(root, textvariable=module_var, values=modules)
 module_dropdown.pack(pady=5, padx=10, fill='x')
 
-run_button = tk.Button(root, text="Run", command=run_module)
+run_button = tk.Button(root, text="Run Module", command=run_module)
 run_button.pack(pady=10)
 
 # Add version remark at the bottom right
