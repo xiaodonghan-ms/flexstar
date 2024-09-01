@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
@@ -23,13 +24,19 @@ def run_module():
 
     # Run the selected module in a new process
     try:
-        subprocess.Popen(["python", selected_module, folder_path])
+        subprocess.Popen(["python", os.path.join('module', selected_module), folder_path])
     except Exception as e:
         messagebox.showerror("Error", f"Error running module: {e}")
 
+def load_modules():
+    # Automatically load all .py files from the module folder
+    module_folder = 'module'
+    modules = [f for f in os.listdir(module_folder) if f.endswith('.py')]
+    return modules
+
 # Create the main window
 root = tk.Tk()
-root.title("Log Parser")
+root.title("Flexstar")
 root.geometry("600x400")
 
 folder_var = tk.StringVar()
@@ -49,7 +56,8 @@ folder_text.pack(side='left', padx=5, fill='x', expand=True)
 module_label = tk.Label(root, text="Select Module:")
 module_label.pack(pady=5)
 
-modules = ["a.py", "b.py", "c.py"]
+# Load modules and populate the dropdown
+modules = load_modules()
 module_dropdown = ttk.Combobox(root, textvariable=module_var, values=modules)
 module_dropdown.pack(pady=5, padx=10, fill='x')
 
