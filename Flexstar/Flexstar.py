@@ -27,18 +27,36 @@ def run_module():
             text=True,
             check=True
         )
-        output_window(result.stdout)
+        output_window(result.stdout, selected_module)
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Error running module: {e.stderr}")
 
-def output_window(output):
+def output_window(output, module):
     result_window = tk.Toplevel(root)
     result_window.title("Parse Results")
-    
-    text_area = tk.Text(result_window, wrap='word', height=20, width=60)
-    text_area.insert('1.0', output)
-    text_area.pack(expand=True, fill='both', padx=10, pady=10)
-    
+
+    if module == "a.py":
+        # Layout for a.py
+        label = tk.Label(result_window, text="File Count Results", font=("Arial", 14))
+        label.pack(pady=10)
+        text_area = tk.Text(result_window, wrap='word', height=15, width=50)
+        text_area.insert('1.0', output)
+        text_area.pack(expand=True, fill='both', padx=10, pady=10)
+    elif module == "b.py":
+        # Layout for b.py
+        label = tk.Label(result_window, text="Log File Count Results", font=("Arial", 14))
+        label.pack(pady=10)
+        text_area = tk.Text(result_window, wrap='word', height=15, width=50)
+        text_area.insert('1.0', output)
+        text_area.pack(expand=True, fill='both', padx=10, pady=10)
+    elif module == "c.py":
+        # Layout for c.py
+        label = tk.Label(result_window, text="Text File Content", font=("Arial", 14))
+        label.pack(pady=10)
+        text_area = tk.Text(result_window, wrap='word', height=15, width=50)
+        text_area.insert('1.0', output)
+        text_area.pack(expand=True, fill='both', padx=10, pady=10)
+
     button_close = tk.Button(result_window, text="Close", command=result_window.destroy)
     button_close.pack(pady=10)
 
@@ -58,7 +76,7 @@ browse_button = tk.Button(frame, text="Browse Folder", command=browse_folder)
 browse_button.pack(side='left', padx=5)
 
 # Use a ScrolledText widget for the folder path
-folder_label = scrolledtext.ScrolledText(frame, wrap='word', width=40, height=1)
+folder_label = scrolledtext.ScrolledText(frame, height=1, wrap='word', width=40)
 folder_label.pack(side='left', padx=5, fill='x', expand=True)
 folder_label.config(state='normal')  # Allow editing
 folder_label.bind("<Key>", lambda e: "break")  # Prevent editing
