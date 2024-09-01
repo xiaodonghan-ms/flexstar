@@ -2,7 +2,7 @@ import os
 import re
 import sys
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 
 
 def find_first_part(line):
@@ -97,6 +97,11 @@ def update_display(folder_path, selected_file, treeview, section_var):
 def create_gui(folder_path):
     # Construct the path to the SAR files
     folder_path = os.path.join(folder_path, 'var', 'log', 'sa')
+
+    # Check if the folder_path exists
+    if not os.path.isdir(folder_path):
+        messagebox.showerror("Error", f"The directory '{folder_path}' does not exist.")
+        return  # Exit the function if the directory does not exist
 
     # Get the list of SAR files
     sar_files = [f for f in os.listdir(folder_path) if
