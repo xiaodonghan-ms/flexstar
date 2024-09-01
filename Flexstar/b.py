@@ -10,7 +10,8 @@ def run(folder_path):
 
 def create_gui(folder_path):
     result = run(folder_path)
-    window = tk.Toplevel()
+
+    window = tk.Tk()
     window.title("Log File Count Results")
 
     label = tk.Label(window, text="Log File Count Results", font=("Arial", 14))
@@ -23,6 +24,8 @@ def create_gui(folder_path):
     button_close = tk.Button(window, text="Close", command=window.destroy)
     button_close.pack(pady=10)
 
+    window.mainloop()
+
 if __name__ == "__main__":
     folder = sys.argv[1] if len(sys.argv) > 1 else "."
-    print(run(folder))
+    create_gui(folder)

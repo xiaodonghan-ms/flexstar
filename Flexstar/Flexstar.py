@@ -1,12 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from tkinter import scrolledtext
-import importlib
+from tkinter.scrolledtext import ScrolledText
 import subprocess
 
 def browse_folder():
     folder_path = filedialog.askdirectory()
     folder_var.set(folder_path)
+    folder_text.delete('1.0', tk.END)  # Clear previous text
+    folder_text.insert(tk.END, folder_path)  # Insert the new folder path
 
 def run_module():
     folder_path = folder_var.get()
@@ -20,14 +21,16 @@ def run_module():
         messagebox.showwarning("Warning", "Please select a module.")
         return
 
-    # Dynamically import the selected module
-    module = importlib.import_module(selected_module[:-3])  # Remove .py extension
-    module.create_gui(folder_path)
+    # Run the selected module in a new process
+    try:
+        subprocess.Popen(["python", selected_module, folder_path])
+    except Exception as e:
+        messagebox.showerror("Error", f"Error running module: {e}")
 
 # Create the main window
 root = tk.Tk()
 root.title("Log Parser")
-root.geometry("600x400")  # Set the size of the main window
+root.geometry("600x400")
 
 folder_var = tk.StringVar()
 module_var = tk.StringVar(value="Select Module")
@@ -39,19 +42,9 @@ frame.pack(pady=10, padx=10, fill='x')
 browse_button = tk.Button(frame, text="Browse Folder", command=browse_folder)
 browse_button.pack(side='left', padx=5)
 
-# Use a ScrolledText widget for the folder path
-folder_label = scrolledtext.ScrolledText(frame, height=1, wrap='word', width=40)
-folder_label.pack(side='left', padx=5, fill='x', expand=True)
-folder_label.config(state='normal')  # Allow editing
-folder_label.bind("<Key>", lambda e: "break")  # Prevent editing
-
-def update_folder_label(*args):
-    folder_label.config(state='normal')
-    folder_label.delete('1.0', tk.END)
-    folder_label.insert(tk.END, folder_var.get())
-    folder_label.config(state='disabled')
-
-folder_var.trace("w", update_folder_label)
+# Use ScrolledText for folder path display
+folder_text = ScrolledText(frame, height=1, wrap='word', width=40)
+folder_text.pack(side='left', padx=5, fill='x', expand=True)
 
 module_label = tk.Label(root, text="Select Module:")
 module_label.pack(pady=5)
