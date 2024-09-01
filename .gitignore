@@ -1,3 +1,4 @@
 .vs/
+.idea/
 *.sln
 __pycache__
