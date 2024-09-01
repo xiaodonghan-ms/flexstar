@@ -7,19 +7,56 @@ from tkinter import ttk
 def run(folder_path, selected_file):
     # Construct the full path to the selected SAR file
     file_path = os.path.join(folder_path, selected_file)
-    if os.path.isfile(file_path):
-        with open(file_path, 'r') as file:
-            content = file.read()
-        result = f"Contents of {selected_file}:\n{content}"
-    else:
-        result = "Selected file does not exist."
-    return result
+    sections = {}
+    current_section = None
+    section_lines = []
+    last_is_average = False
+
+    with open(file_path, 'r') as file:
+        for line in file:
+            line = line.strip()
+
+            # Skip empty lines and lines containing "Linux" or "linux"
+            if not line or "Linux" in line:
+                continue
+
+            # Check for the "Average" keyword to identify new sections
+            if line.startswith("Average:"):
+                # Continue collecting lines for the current section
+                if current_section and section_lines:
+                    section_lines.append(line)
+
+                last_is_average = True
+            else:
+                if last_is_average:
+                    sections[current_section] = "\n".join(section_lines)
+
+                    current_section = None
+                    section_lines = []
+                    last_is_average = False
+
+                # Continue collecting lines for the current section
+                if current_section and section_lines:
+                    section_lines.append(line)
+                else:
+                    # Start a new section
+                    current_section = line.split()[2]  # Get the second word as section name
+                    section_lines = [line]  # Start collecting lines for this section
+
+        # Save the last section if it exists
+        if current_section and section_lines:
+            sections[current_section] = "\n".join(section_lines)
+
+    return sections
 
 
-def update_display(folder_path, selected_file, text_area):
-    result = run(folder_path, selected_file)
+def update_display(folder_path, selected_file, text_area, section_var):
+    sections = run(folder_path, selected_file)
+    selected_section = section_var.get()
+    content = sections.get(selected_section, "Section not found.")
+
     text_area.delete('1.0', tk.END)  # Clear existing text
-    text_area.insert('1.0', result)  # Insert new content
+    text_area.insert('1.0', content)  # Insert new content
 
 
 def create_gui(folder_path):
@@ -44,6 +81,11 @@ def create_gui(folder_path):
     file_dropdown = ttk.Combobox(window, textvariable=selected_file_var, values=sar_files, state="readonly")
     file_dropdown.pack(pady=10)
 
+    # Dropdown for selecting sections
+    section_var = tk.StringVar(value="")
+    section_dropdown = ttk.Combobox(window, textvariable=section_var, state="readonly")
+    section_dropdown.pack(pady=10)
+
     # Frame for the text area
     text_frame = tk.Frame(window)
     text_frame.pack(expand=True, fill='both', padx=10, pady=10)
@@ -67,13 +109,22 @@ def create_gui(folder_path):
     # Update text area when a new file is selected
     def on_file_select(event):
         selected_file = selected_file_var.get()
-        update_display(folder_path, selected_file, text_area)
+        sections = run(folder_path, selected_file)
+        section_dropdown['values'] = list(sections.keys())  # Update section dropdown
+        if len(sections.keys()) > 0:
+            section_dropdown.current(0)  # Select the first section by default
+        update_display(folder_path, selected_file, text_area, section_var)
+
+    # Update text area when a new section is selected
+    def on_section_select(event):
+        update_display(folder_path, selected_file_var.get(), text_area, section_var)
 
     file_dropdown.bind("<<ComboboxSelected>>", on_file_select)
+    section_dropdown.bind("<<ComboboxSelected>>", on_section_select)
 
     # Initial display of the first SAR file (if available)
     if sar_files:
-        update_display(folder_path, sar_files[0], text_area)
+        on_file_select(None)
 
     window.mainloop()
 
