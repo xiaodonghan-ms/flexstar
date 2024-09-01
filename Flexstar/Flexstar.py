@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from tkinter import scrolledtext
+import importlib
 import subprocess
 
 def browse_folder():
@@ -19,46 +20,9 @@ def run_module():
         messagebox.showwarning("Warning", "Please select a module.")
         return
 
-    # Run the selected module in a new process
-    try:
-        result = subprocess.run(
-            ["python", selected_module, folder_path],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        output_window(result.stdout, selected_module)
-    except subprocess.CalledProcessError as e:
-        messagebox.showerror("Error", f"Error running module: {e.stderr}")
-
-def output_window(output, module):
-    result_window = tk.Toplevel(root)
-    result_window.title("Parse Results")
-
-    if module == "a.py":
-        # Layout for a.py
-        label = tk.Label(result_window, text="File Count Results", font=("Arial", 14))
-        label.pack(pady=10)
-        text_area = tk.Text(result_window, wrap='word', height=15, width=50)
-        text_area.insert('1.0', output)
-        text_area.pack(expand=True, fill='both', padx=10, pady=10)
-    elif module == "b.py":
-        # Layout for b.py
-        label = tk.Label(result_window, text="Log File Count Results", font=("Arial", 14))
-        label.pack(pady=10)
-        text_area = tk.Text(result_window, wrap='word', height=15, width=50)
-        text_area.insert('1.0', output)
-        text_area.pack(expand=True, fill='both', padx=10, pady=10)
-    elif module == "c.py":
-        # Layout for c.py
-        label = tk.Label(result_window, text="Text File Content", font=("Arial", 14))
-        label.pack(pady=10)
-        text_area = tk.Text(result_window, wrap='word', height=15, width=50)
-        text_area.insert('1.0', output)
-        text_area.pack(expand=True, fill='both', padx=10, pady=10)
-
-    button_close = tk.Button(result_window, text="Close", command=result_window.destroy)
-    button_close.pack(pady=10)
+    # Dynamically import the selected module
+    module = importlib.import_module(selected_module[:-3])  # Remove .py extension
+    module.create_gui(folder_path)
 
 # Create the main window
 root = tk.Tk()
