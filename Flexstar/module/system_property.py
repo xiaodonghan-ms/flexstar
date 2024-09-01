@@ -71,7 +71,7 @@ def create_gui(log_file_path):
 
     # Create a new Tkinter window
     result_window = tk.Tk()
-    result_window.title("Parsed SOS Report")
+    result_window.title("Parsed System Property")
     # Get the screen dimensions
     screen_width = result_window.winfo_screenwidth()
     screen_height = result_window.winfo_screenheight()
