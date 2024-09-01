@@ -22,6 +22,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Flexstar.py" />
+    <Compile Include="module\a.py" />
+    <Compile Include="module\b.py" />
+    <Compile Include="module\c.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="module\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
