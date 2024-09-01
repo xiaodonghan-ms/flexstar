@@ -1,7 +1,6 @@
 import os
 import sys
 import tkinter as tk
-from tkinter import messagebox
 
 def run(folder_path):
     files = os.listdir(folder_path)
@@ -11,7 +10,8 @@ def run(folder_path):
 
 def create_gui(folder_path):
     result = run(folder_path)
-    window = tk.Toplevel()
+    
+    window = tk.Tk()
     window.title("File Count Results")
 
     label = tk.Label(window, text="File Count Results", font=("Arial", 14))
@@ -23,10 +23,9 @@ def create_gui(folder_path):
 
     button_close = tk.Button(window, text="Close", command=window.destroy)
     button_close.pack(pady=10)
-    
-    #window.mainloop()
+
+    window.mainloop()
 
 if __name__ == "__main__":
     folder = sys.argv[1] if len(sys.argv) > 1 else "."
-    #create_gui(folder)
-    print(run(folder))
+    create_gui(folder)
