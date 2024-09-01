@@ -5,6 +5,12 @@ from tkinter import ttk, messagebox
 from tkinter import filedialog
 from tkinter.scrolledtext import ScrolledText
 
+"""
+App: Flexstar
+Author: Anton Han
+Email: xiaodonghan@microsoft.com
+"""
+
 def browse_folder():
     folder_path = filedialog.askdirectory()
     if folder_path:

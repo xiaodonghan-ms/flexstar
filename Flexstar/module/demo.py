@@ -16,9 +16,15 @@ def create_gui(folder_path):
     result = run(folder_path)
 
     window = tk.Tk()
-    window.title("Text File Content")
+    window.title("Sar Analysis")
+    # Get the screen dimensions
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
 
-    label = tk.Label(window, text="Text File Content", font=("Arial", 14))
+    # Set the window size to be maximized but not fullscreen
+    window.geometry(f"{screen_width}x{screen_height - 80}+0+0")
+
+    label = tk.Label(window, text="Sar Analysis", font=("Arial", 14))
     label.pack(pady=10)
 
     text_area = tk.Text(window, wrap='word', height=15, width=50)
