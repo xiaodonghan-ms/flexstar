@@ -1,8 +1,20 @@
 import os
+import re
 import sys
 import tkinter as tk
 from tkinter import ttk
 
+
+def find_first_part(line):
+    # Split the line into parts
+    parts = line.split()
+
+    # Iterate through the parts
+    for part in parts:
+        # Check if the part contains letters and is not "AM" or "PM"
+        if re.search(r'[a-zA-Z]', part) and part not in ["AM", "PM"]:
+            return part
+    return "Unknown"  # Return Unknown if no valid part is found
 
 def run(folder_path, selected_file):
     # Construct the full path to the selected SAR file
@@ -40,7 +52,7 @@ def run(folder_path, selected_file):
                     section_lines.append(line)
                 else:
                     # Start a new section
-                    current_section = line.split()[2]  # Get the second word as section name
+                    current_section = find_first_part(line)  # Get the second word as section name
                     section_lines = [line]  # Start collecting lines for this section
 
         # Save the last section if it exists
@@ -76,15 +88,18 @@ def create_gui(folder_path):
     # Set the window size to be maximized but not fullscreen
     window.geometry(f"{screen_width}x{screen_height - 80}+0+0")
 
+    drop_down_frame = tk.Frame(window)
+    drop_down_frame.pack(pady=10)
+
     # Dropdown for selecting SAR files
     selected_file_var = tk.StringVar(value=sar_files[0] if sar_files else "")
-    file_dropdown = ttk.Combobox(window, textvariable=selected_file_var, values=sar_files, state="readonly")
-    file_dropdown.pack(pady=10)
+    file_dropdown = ttk.Combobox(drop_down_frame, textvariable=selected_file_var, values=sar_files, state="readonly")
+    file_dropdown.pack(side=tk.LEFT, padx=5)  # Align to the left
 
     # Dropdown for selecting sections
     section_var = tk.StringVar(value="")
-    section_dropdown = ttk.Combobox(window, textvariable=section_var, state="readonly")
-    section_dropdown.pack(pady=10)
+    section_dropdown = ttk.Combobox(drop_down_frame, textvariable=section_var, state="readonly")
+    section_dropdown.pack(side=tk.LEFT, padx=5)  # Align to the left
 
     # Frame for the text area
     text_frame = tk.Frame(window)
