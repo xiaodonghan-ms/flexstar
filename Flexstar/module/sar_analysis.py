@@ -16,6 +16,7 @@ def find_first_part(line):
             return part
     return "Unknown"  # Return Unknown if no valid part is found
 
+
 def run(folder_path, selected_file):
     # Construct the full path to the selected SAR file
     file_path = os.path.join(folder_path, selected_file)
@@ -62,13 +63,35 @@ def run(folder_path, selected_file):
     return sections
 
 
-def update_display(folder_path, selected_file, text_area, section_var):
+def update_display(folder_path, selected_file, treeview, section_var):
     sections = run(folder_path, selected_file)
     selected_section = section_var.get()
-    content = sections.get(selected_section, "Section not found.")
 
-    text_area.delete('1.0', tk.END)  # Clear existing text
-    text_area.insert('1.0', content)  # Insert new content
+    # Clear the existing columns and rows in the Treeview
+    treeview.delete(*treeview.get_children())
+    treeview["columns"] = []  # Reset columns
+
+    # Get the data for the selected section
+    content = sections.get(selected_section, [])
+
+    if not content:
+        return  # No content to display
+
+    # Determine the columns based on the first line of content
+    content_list = content.split("\n")
+    first_line_parts = content_list[0].split()
+    num_columns = len(first_line_parts)
+
+    # Set up columns
+    treeview["columns"] = [first_line_parts[i] for i in range(num_columns)]
+    for i in range(num_columns):
+        treeview.heading(first_line_parts[i], text=first_line_parts[i])
+        treeview.column(first_line_parts[i], anchor=tk.CENTER)
+
+    # Insert new rows for the selected section
+    for line in content_list[1:]:
+        parts = line.split()  # Split the line into parts for table display
+        treeview.insert("", tk.END, values=parts)
 
 
 def create_gui(folder_path):
@@ -101,38 +124,36 @@ def create_gui(folder_path):
     section_dropdown = ttk.Combobox(drop_down_frame, textvariable=section_var, state="readonly")
     section_dropdown.pack(side=tk.LEFT, padx=5)  # Align to the left
 
-    # Frame for the text area
-    text_frame = tk.Frame(window)
-    text_frame.pack(expand=True, fill='both', padx=10, pady=10)
+    # Frame for the Treeview
+    treeview_frame = tk.Frame(window)
+    treeview_frame.pack(expand=True, fill='both', padx=10, pady=10)
 
-    # Text area to display SAR file content
-    text_area = tk.Text(text_frame, wrap='word', height=15, width=50)
-    text_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    # Treeview to display SAR file content
+    treeview = ttk.Treeview(treeview_frame, show='headings')
+    treeview.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    # Vertical scrollbar
-    v_scrollbar = tk.Scrollbar(text_frame, orient=tk.VERTICAL, command=text_area.yview)
+    # Scrollbars for the Treeview
+    v_scrollbar = ttk.Scrollbar(treeview_frame, orient=tk.VERTICAL, command=treeview.yview)
     v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    # Horizontal scrollbar
-    h_scrollbar = tk.Scrollbar(window, orient=tk.HORIZONTAL, command=text_area.xview)
+    h_scrollbar = ttk.Scrollbar(window, orient=tk.HORIZONTAL, command=treeview.xview)
     h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
 
-    # Configure the text area to use the scrollbars
-    text_area.config(yscrollcommand=v_scrollbar.set)
-    text_area.config(xscrollcommand=h_scrollbar.set)
+    treeview.configure(yscrollcommand=v_scrollbar.set)
+    treeview.configure(xscrollcommand=h_scrollbar.set)
 
-    # Update text area when a new file is selected
+    # Update Treeview when a new file is selected
     def on_file_select(event):
         selected_file = selected_file_var.get()
         sections = run(folder_path, selected_file)
         section_dropdown['values'] = list(sections.keys())  # Update section dropdown
         if len(sections.keys()) > 0:
             section_dropdown.current(0)  # Select the first section by default
-        update_display(folder_path, selected_file, text_area, section_var)
+        update_display(folder_path, selected_file, treeview, section_var)
 
-    # Update text area when a new section is selected
+    # Update Treeview when a new section is selected
     def on_section_select(event):
-        update_display(folder_path, selected_file_var.get(), text_area, section_var)
+        update_display(folder_path, selected_file_var.get(), treeview, section_var)
 
     file_dropdown.bind("<<ComboboxSelected>>", on_file_select)
     section_dropdown.bind("<<ComboboxSelected>>", on_section_select)
