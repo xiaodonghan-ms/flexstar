@@ -2,6 +2,12 @@ import os
 import sys
 import tkinter as tk
 
+"""
+Module: demo
+Author: Anton Han
+Email: xiaodonghan@microsoft.com
+"""
+
 def run(folder_path):
     txt_files = [f for f in os.listdir(folder_path) if f.endswith('.txt')]
     if txt_files:
