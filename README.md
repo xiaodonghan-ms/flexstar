@@ -6,4 +6,6 @@ The project is designed to support various plugins, allowing users to easily int
 
 This initiative not only simplifies log analysis but also encourages community involvement, making it a valuable resource for users seeking to improve their operational efficiency.
 
+All Python submodules within the module folder can be executed independently from the main module. Each submodule can operate with or without a graphical user interface (GUI). Additionally, the main module has the capability to run each submodule as a subprocess, providing flexibility and enhancing modularity in execution.
+
 ![image](https://github.com/user-attachments/assets/8632ddc2-86fc-446f-919f-23398e2f4419)
