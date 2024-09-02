@@ -3,6 +3,12 @@ import sys
 import tkinter as tk
 import glob
 
+"""
+Module: system_reboot
+Author: Anton Han
+Email: xiaodonghan@microsoft.com
+"""
+
 def parse_reboot_events(folder_path):
     reboot_events = []
 

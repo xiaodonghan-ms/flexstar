@@ -4,6 +4,11 @@ import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+"""
+Module: sas_analysis
+Author: Anton Han
+Email: xiaodonghan@microsoft.com
+"""
 
 def find_first_part(line):
     # Split the line into parts
