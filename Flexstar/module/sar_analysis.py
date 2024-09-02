@@ -10,7 +10,7 @@ Author: Anton Han
 Email: xiaodonghan@microsoft.com
 """
 
-# TODO: search in treeview
+# TODO: search in treeview, and filter with keywords
 
 def find_first_part(line):
     # Split the line into parts
