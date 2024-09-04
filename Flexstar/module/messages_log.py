@@ -31,9 +31,9 @@ def df_formated(output_header, output_lines):
     df_output = pd.DataFrame(output_lines, columns=output_header)
     return df_output
 
-
 def create_gui(folder_path):
-    result = run(folder_path)
+    output_header, output_lines = formatting_journalctl_a(filepath)
+    result = df_formated(output_header, output_lines)
 
     window = tk.Tk()
     window.title("Sar Analysis")
@@ -55,6 +55,7 @@ def create_gui(folder_path):
     button_close.pack(pady=10)
 
     window.mainloop()
+
 
 if __name__ == "__main__":
     folder = sys.argv[1] if len(sys.argv) > 1 else "."

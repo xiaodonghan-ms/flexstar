@@ -3,7 +3,7 @@ import sys
 import pandas as pd
 import tkinter as tk
 import pandas as pd
-
+import numpy as np
 """
 Module: systemd_analysis
 Author: Ken Zhang
