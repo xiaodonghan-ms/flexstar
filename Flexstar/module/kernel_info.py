@@ -3,48 +3,46 @@ import sys
 import pandas as pd
 import tkinter as tk
 import pandas as pd
-import numpy as np
+from tkinter import ttk
+
 """
-Module: systemd_analysis
+Module: lsmod, sysctl-a
 Author: Ken Zhang
 Email: devilken20131984@gmail.com
 """
-#formatting systemctl list-units
-def formatting_systemctl_listunites(folder_path):
-    filepath = os.path.join(folder_path, r'sos_commands/systemd/systemctl_list-units')
+
+#formatting "lsmod" output
+def formatting_lsmod(folder_path, ):
+    filepath = os.path.join(folder_path, r'lsmod')
     with open(filepath, 'r') as f:
         content = f.readlines()
-    content = content[:-6]
-    output_lines = []
     output_header = content[0].split()
+    output_lines = []
     for line in content[1:]:
-        line_split = line.split()
-        output_line = line_split[:4]
-        output_line.append(' '.join(line_split[4:]))
+        s_line = line.split()
+        if len(s_line) == 3:
+            s_line.append(" ")
+        output_lines.append(s_line)
+    return output_header,output_lines
+
+#formatting "sysctl -a" output
+def formatting_sysctl_a(folder_path):
+    filepath = os.path.join(folder_path, r'sos_commands/kernel/sysctl_-a')
+    with open(filepath, 'r') as f:
+        content = f.readlines()
+    output_lines = []
+    output_header = ["Name", "Value"]
+    for line in content:
+        line_split = line.split('=')
+        output_line = [line_split[0], line_split[1].strip()]
         output_lines.append(output_line)
     return output_header,output_lines
 
-#formatting systemctl list-units-files
-def formatting_systemctl_listunitfiles(folder_path):
-    filepath = os.path.join(folder_path, r'sos_commands/systemd/systemctl_list-unit-files')
-    with open(filepath, 'r') as f:
-        content = f.readlines()
-    content = content[:-2]
-    output_header = []
-    output_lines = []
-    output_header.append(" ".join(content[0].split()[0:2]))
-    output_header.append(content[0].split()[2])
-    output_header.append(" ".join(content[0].split()[3:]))
-    for line in content[1:]:
-        output_lines.append(line.split())
-    return output_header,output_lines
-
-#Return data as Pandas DataFrame
 def df_formated(output_header, output_lines):
     df_output = pd.DataFrame(output_lines, columns=output_header)
     return df_output
 
-def create_gui(folder_path, input_func):
+def create_gui(folder_path,input_func):
     output_header, output_lines = input_func(folder_path)
     result = df_formated(output_header, output_lines)
     
