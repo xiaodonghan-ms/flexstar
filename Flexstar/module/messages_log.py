@@ -3,15 +3,17 @@ import sys
 import pandas as pd
 import tkinter as tk
 import pandas as pd
+from tkinter import ttk
 
 """
-Module: systemd_analysis
+Module: messages_analysis
 Author: Ken Zhang
 Email: devilken20131984@gmail.com
 """
 
 #formatting /var/log/messages output
-def formatting_journalctl_a(filepath):
+def formatting_journalctl_a(folder_path):
+    filepath = os.path.join(folder_path, 'var/log/messages')
     with open(filepath, 'r',encoding="utf8") as f:
         content = f.readlines()
     content = content[1:]
@@ -31,10 +33,34 @@ def df_formated(output_header, output_lines):
     df_output = pd.DataFrame(output_lines, columns=output_header)
     return df_output
 
-
 def create_gui(folder_path):
-    result = run(folder_path)
+    output_header, output_lines = formatting_journalctl_a(folder_path)
+    result = df_formated(output_header, output_lines)
+    
+    # Create the main window
+    root = tk.Tk()
+    root.title("Pandas DataFrame in Tkinter")
+    
+    # Create a Treeview widget
+    tree = ttk.Treeview(root)
+    tree["columns"] = list(result.columns)
+    tree["show"] = "headings"   
+    
+    # Define the column headings
+    for column in result.columns:
+        tree.heading(column, text=column)
+        # Add the data to the Treeview
+    for index, row in result.iterrows():
+        tree.insert("", "end", values=list(row))
 
+    # Pack the Treeview widget
+    tree.pack(expand=True, fill='both')
+
+    # Run the application
+    root.mainloop()
+
+
+'''
     window = tk.Tk()
     window.title("Sar Analysis")
     # Get the screen dimensions
@@ -55,6 +81,7 @@ def create_gui(folder_path):
     button_close.pack(pady=10)
 
     window.mainloop()
+'''
 
 if __name__ == "__main__":
     folder = sys.argv[1] if len(sys.argv) > 1 else "."

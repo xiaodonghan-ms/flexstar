@@ -3,41 +3,51 @@ import sys
 import pandas as pd
 import tkinter as tk
 import pandas as pd
-import numpy as np
+from tkinter import ttk
+
 """
-Module: systemd_analysis
+Module: net_config
 Author: Ken Zhang
 Email: devilken20131984@gmail.com
 """
-#formatting systemctl list-units
-def formatting_systemctl_listunites(folder_path):
-    filepath = os.path.join(folder_path, r'sos_commands/systemd/systemctl_list-units')
-    with open(filepath, 'r') as f:
+
+#formatting "ip -o addr" output
+def formatting_ip_o_addr(folder_path):
+    filepath = os.path.join(folder_path, 'sos_commands/networking/ip_-o_addr')
+    with open(filepath, 'r',encoding="utf8") as f:
         content = f.readlines()
-    content = content[:-6]
     output_lines = []
-    output_header = content[0].split()
-    for line in content[1:]:
+    output_header = ["Interface", "ipv4_v6","IP", "other_info"]
+    
+    for line in content:
+        output_line = []
         line_split = line.split()
-        output_line = line_split[:4]
-        output_line.append(' '.join(line_split[4:]))
+        output_line.append(line_split[1])
+        output_line.append(line_split[2])
+        output_line.append(line_split[3])
+        output_line.append(" ".join(line_split[4:]))
         output_lines.append(output_line)
     return output_header,output_lines
-
-#formatting systemctl list-units-files
-def formatting_systemctl_listunitfiles(folder_path):
-    filepath = os.path.join(folder_path, r'sos_commands/systemd/systemctl_list-unit-files')
+    
+def formatting_netstat_iconnection(folder_path):
+    filepath = os.path.join(folder_path, r'sos_commands/networking/netstat_-W_-neopa')
     with open(filepath, 'r') as f:
         content = f.readlines()
-    content = content[:-2]
-    output_header = []
+    content = content[2:content.index('Active UNIX domain sockets (servers and established)\n')]
     output_lines = []
-    output_header.append(" ".join(content[0].split()[0:2]))
-    output_header.append(content[0].split()[2])
-    output_header.append(" ".join(content[0].split()[3:]))
-    for line in content[1:]:
-        output_lines.append(line.split())
+    output_header = ["Proto", "Recv-Q", "Send-Q", "Local Address", "Foreign Address", "State", "User","Inode","PID/Program name","Timer"]
+    for line in content:
+        line_split = line.split()
+        if len(line_split) == 12:
+            line_split[-4] = " ".join(line_split[-4:-2])
+            line_split.remove(line_split[-3])
+        if len(line_split) == 10:
+            line_split.insert(5, " ")
+        line_split[-2] = " ".join(line_split[-2:])
+        line_split.remove(line_split[-1])
+        output_lines.append(line_split)
     return output_header,output_lines
+        
 
 #Return data as Pandas DataFrame
 def df_formated(output_header, output_lines):
@@ -69,7 +79,7 @@ def create_gui(folder_path, input_func):
 
     # Run the application
     root.mainloop()
-
+    
 if __name__ == "__main__":
     folder = sys.argv[1] if len(sys.argv) > 1 else "."
     create_gui(folder)
