@@ -4,6 +4,12 @@ import re
 import tkinter as tk
 from tkinter.scrolledtext import ScrolledText
 
+"""
+Module: system_property
+Author: Anton Han
+Email: xiaodonghan@microsoft.com
+"""
+
 def parse_os_property(folder_path):
     os_file_path = os.path.join(folder_path, 'etc/redhat-release')
     if not os.path.isfile(os_file_path):

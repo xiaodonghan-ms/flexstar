@@ -4,6 +4,13 @@ import sys
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+"""
+Module: sas_analysis
+Author: Anton Han
+Email: xiaodonghan@microsoft.com
+"""
+
+# TODO: search in treeview, and filter with keywords, and sort by column
 
 def find_first_part(line):
     # Split the line into parts
